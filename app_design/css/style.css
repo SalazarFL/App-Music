@@ -459,3 +459,106 @@
       margin: 5px 0;
     }
   }
+
+  /* Estilos para el formulario de login */
+#login_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+}
+
+#login_form {
+  width: 400px;
+  background: #f9f9f9;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-form .form-group {
+  margin-bottom: 20px;
+}
+
+.login-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  color: white;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.user-info span {
+  margin-right: 15px;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: white;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+
+.link-button:hover {
+  text-decoration: none;
+}
+
+.logout-form {
+  display: inline;
+}
+
+/* Estilo para la información del publicador */
+.song-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #95a5a6;
+}
+
+.song-publisher {
+  display: flex;
+  align-items: center;
+}
+
+.publisher-name {
+  font-weight: 600;
+  color: #7f8c8d;
+  margin: 0 5px;
+}
+
+.publisher-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-left: 5px;
+}
+
+/* Actualizar los botones de acción para que solo se muestren al usuario correcto */
+.song-actions {
+  display: flex;
+  align-items: center;
+}
+
+.edit-button, .delete-button {
+  opacity: 0.8;
+  transition: opacity 0.3s, transform 0.2s;
+}
+
+.edit-button:hover, .delete-button:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
