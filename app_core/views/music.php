@@ -152,32 +152,54 @@ $genres = [
              ($isSearching ? "No se encontraron resultados para tu búsqueda." : "No hay canciones compartidas aún. ¡Sé el primero en compartir!") .
              "</p><div class='empty-icon'><i class='fa-music'></i></div></div>";
     } else {
-        foreach ($songs as $song) {
-            $songId = (int)$song['id'];
-            $title = htmlspecialchars($song['title'], ENT_QUOTES, 'UTF-8');
-            $artist = htmlspecialchars($song['artist'], ENT_QUOTES, 'UTF-8');
-            $genre = htmlspecialchars($song['genre'], ENT_QUOTES, 'UTF-8');
-            $review = htmlspecialchars($song['review'], ENT_QUOTES, 'UTF-8');
-            $rating = (int)$song['rating'];
+        foreach($songs as $song) {
+            $songId     = (int)$song['id'];
+            $title      = htmlspecialchars($song['title'], ENT_QUOTES, 'UTF-8');
+            $artist     = htmlspecialchars($song['artist'], ENT_QUOTES, 'UTF-8');
+            $genre      = htmlspecialchars($song['genre'], ENT_QUOTES, 'UTF-8');
+            $review     = nl2br(htmlspecialchars($song['review'], ENT_QUOTES, 'UTF-8'));
+            $rating     = (int)$song['rating'];
+            $userId     = (int)$song['user_id'];
+            $username   = htmlspecialchars($song['username'], ENT_QUOTES, 'UTF-8');
+            $fullName   = htmlspecialchars($song['full_name'], ENT_QUOTES, 'UTF-8');
+            $profileImage = htmlspecialchars($song['profile_image'], ENT_QUOTES, 'UTF-8');
+        
+            // Formatear fecha para mostrar de manera más amigable
             $createdAt = new DateTime($song['created_at']);
-            $formattedDate = $createdAt->format("d/m/Y H:i");
-            $genreText = $genres[$genre] ?? $genre;
-
-            $stars = "";
+            $formattedDate = $createdAt->format('d/m/Y H:i');
+        
+            // Mostrar estrellas según la calificación
+            $stars = '';
             for ($i = 1; $i <= 5; $i++) {
-                $stars .= "<i class='far fa-star" . ($i <= $rating ? " filled" : "") . "'></i>";
+                if ($i <= $rating) {
+                    $stars .= '<i class="fas fa-star filled"></i>';
+                } else {
+                    $stars .= '<i class="far fa-star"></i>';
+                }
             }
-
-            echo "
-            <div class='songs-block'>
+        
+            // Convertir el género a texto legible
+            $genreText = $genres[$genre] ?? $genre;
+        
+            // Determinar si el usuario actual puede editar/eliminar esta canción
+            $canEdit = ($_SESSION['USER_ID'] == $userId);
+            $actionButtons = '';
+        
+            if ($canEdit) {
+                $actionButtons = "
+                    <a href='" . __SITE_PATH . "?edit={$songId}' class='edit-button' title='Editar'><i class='fas fa-edit'></i></a>
+                    <form method='post' action='' class='delete-form' onsubmit='return confirm(\"¿Estás seguro de que deseas eliminar esta canción?\")'>
+                        <input type='hidden' name='hdn_id' value='{$songId}'>
+                        <button type='submit' name='btn_delete' class='delete-button' title='Eliminar'><i class='fas fa-trash'></i></button>
+                    </form>
+                ";
+            }
+        
+            echo "<div class='song-block'>
                 <div class='song-header'>
                     <h3 class='song-title'>{$title}</h3>
                     <div class='song-actions'>
-                        <a href='" . __SITE_PATH . "?edit={$songId}' class='edit-button' title='Editar'><i class='fas fa-edit'></i></a>
-                        <form method='post' action='' class='delete-form' onsubmit='return confirm(\"¿Estás seguro de que deseas eliminar esta canción?\")'>
-                            <input type='hidden' name='hdn_id' value='{$songId}' />
-                            <button type='submit' name='btn_delete' class='delete-button' title='Eliminar'><i class='fas fa-trash'></i></button>
-                        </form>
+                        {$actionButtons}
                     </div>
                 </div>
                 <div class='song-artist'><i class='fas fa-user'></i> {$artist}</div>
@@ -186,7 +208,13 @@ $genres = [
                     <span class='song-rating'>{$stars}</span>
                 </div>
                 <div class='song-review'>{$review}</div>
-                <div class='song-date'>Compartido: {$formattedDate}</div>
+                <div class='song-details'>
+                    <div class='song-date'>Compartido: {$formattedDate}</div>
+                    <div class='song-publisher'>
+                        Por: <span class='publisher-name'>{$fullName}</span>
+                        <img src='" . __RSC_PHO_HOST_PATH . "{$profileImage}' alt='{$username}' class='publisher-avatar'>
+                    </div>
+                </div>
             </div>";
         }
     }

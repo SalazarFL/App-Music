@@ -1,6 +1,6 @@
 <?php
 // Variables que definen el nombre actual del hosting
-$myhost   = "http://localhost";
+$myhost   = "https://musicapp-php.infinityfreeapp.com";
 $myproject = "music-app";
 $mysite   = $myhost . "/" . $myproject;
 date_default_timezone_set('America/Tegucigalpa');
@@ -16,6 +16,9 @@ define('__CTR_HOST_PATH', $mysite . "/app_core/controllers/");
 define('__JS_PATH', $mysite . "/app_design/js/");
 define('__CSS_PATH', $mysite . "/app_design/css/");
 define('__IMG_PATH', $mysite . "/app_design/img/");
+define('__RSC_HOST_PATH', $mysite . "/app_core/resources/");
+define('__RSC_PHO_HOST_PATH', $mysite . "/app_core/resources/photos/");
+
 
 // GLOBAL FUNCTIONS
 set_error_handler("my_error_handler", E_ALL);

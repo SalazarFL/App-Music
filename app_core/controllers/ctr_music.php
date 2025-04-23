@@ -39,24 +39,26 @@ class ctr_Music {
     public function btn_save_click(): bool {
         if (!isset($_POST['txt_title']) || !isset($_POST['txt_artist']) ||
             !isset($_POST['sel_genre']) || !isset($_POST['txt_review']) ||
-            !isset($_POST['rating'])) {
+            !isset($_POST['rating']) || !isset($_SESSION['USER_ID'])) {
             cls_Message::show_message("Por favor, complete todos los campos", "error", "");
             return false;
         }
 
         // Escapar y validar los datos ingresados
         $songdata = [
-            'title' => htmlspecialchars($_POST['txt_title'], ENT_QUOTES, 'UTF-8'),
+            'title'  => htmlspecialchars($_POST['txt_title'], ENT_QUOTES, 'UTF-8'),
             'artist' => htmlspecialchars($_POST['txt_artist'], ENT_QUOTES, 'UTF-8'),
-            'genre' => htmlspecialchars($_POST['sel_genre'], ENT_QUOTES, 'UTF-8'),
+            'genre'  => htmlspecialchars($_POST['sel_genre'], ENT_QUOTES, 'UTF-8'),
             'review' => htmlspecialchars($_POST['txt_review'], ENT_QUOTES, 'UTF-8'),
-            'rating' => (int)$_POST['rating']
+            'rating' => (int)$_POST['rating'],
+            'user_id'=> (int)$_SESSION['USER_ID']
         ];
 
         // Validar datos
         if (empty($songdata['title']) || empty($songdata['artist']) ||
             empty($songdata['genre']) || empty($songdata['review']) ||
-            $songdata['rating'] < 1 || $songdata['rating'] > 5) {
+            $songdata['rating'] < 1 || $songdata['rating'] > 5 ||
+            $songdata['user_id'] < 0) {
             cls_Message::show_message("Datos inválidos. Por favor, verifique la información ingresada.", "error", "");
             return false;
         }
@@ -76,25 +78,26 @@ class ctr_Music {
     public function btn_update_click(): bool {
         if (!isset($_POST['hdn_id']) || !isset($_POST['txt_title']) || !isset($_POST['txt_artist']) ||
             !isset($_POST['sel_genre']) || !isset($_POST['txt_review']) ||
-            !isset($_POST['rating'])) {
+            !isset($_POST['rating']) || !isset($_SESSION['USER_ID'])) {
             cls_Message::show_message("Por favor, complete todos los campos", "error", "");
             return false;
         }
 
         // Escapar y validar los datos ingresados
         $songdata = [
-            'id' => (int)$_POST['hdn_id'],
-            'title' => htmlspecialchars($_POST['txt_title'], ENT_QUOTES, 'UTF-8'),
+            'id'     => (int)$_POST['hdn_id'],
+            'title'  => htmlspecialchars($_POST['txt_title'], ENT_QUOTES, 'UTF-8'),
             'artist' => htmlspecialchars($_POST['txt_artist'], ENT_QUOTES, 'UTF-8'),
-            'genre' => htmlspecialchars($_POST['sel_genre'], ENT_QUOTES, 'UTF-8'),
+            'genre'  => htmlspecialchars($_POST['sel_genre'], ENT_QUOTES, 'UTF-8'),
             'review' => htmlspecialchars($_POST['txt_review'], ENT_QUOTES, 'UTF-8'),
-            'rating' => (int)$_POST['rating']
+            'rating' => (int)$_POST['rating'],
+            'user_id'=> (int)$_SESSION['USER_ID']
         ];
 
         // Validar datos
-        if ($songdata['id'] <= 0 || empty($songdata['title']) || empty($songdata['artist']) ||
+        if ($songdata['id'] < 0 || empty($songdata['title']) || empty($songdata['artist']) ||
             empty($songdata['genre']) || empty($songdata['review']) ||
-            $songdata['rating'] < 1 || $songdata['rating'] > 5) {
+            $songdata['rating'] < 1 || $songdata['rating'] > 5 || $songdata['user_id'] < 0) {
             cls_Message::show_message("Datos inválidos. Por favor, verifique la información ingresada.", "error", "");
             return false;
         }
@@ -102,6 +105,9 @@ class ctr_Music {
         if ($this->songdata->update_song($songdata)) {
             cls_Message::show_message("Canción actualizada correctamente", "success", "success_update");
             return true;
+        } else {
+            cls_Message::show_message("No tienes permisos para editar esta canción", "error", "");
+            return false;
         }
 
         return false;
@@ -112,24 +118,26 @@ class ctr_Music {
      * @return bool True si se eliminó correctamente, false en caso contrario
      */
     public function btn_delete_click(): bool {
-        if (!isset($_POST['hdn_id'])) {
+        if (!isset($_POST['hdn_id']) || !isset($_SESSION['USER_ID'])) {
             cls_Message::show_message("ID de canción no válido", "error", "");
             return false;
         }
 
         $id = (int)$_POST['hdn_id'];
+        $user_id = (int)$_SESSION['USER_ID'];
 
-        if ($id <= 0) {
+        if ($id < 0 || $user_id < 0) {
             cls_Message::show_message("ID de canción no válido", "error", "");
             return false;
         }
 
-        if ($this->songdata->delete_song($id)) {
+        if ($this->songdata->delete_song($id, $user_id)) {
             cls_Message::show_message("Canción eliminada correctamente", "success", "success_delete");
             return true;
+        } else {
+            cls_Message::show_message("No tienes permisos para eliminar esta canción", "error", "");
+            return false;
         }
-
-        return false;
     }
 
     /**
