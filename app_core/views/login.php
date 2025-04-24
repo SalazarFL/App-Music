@@ -19,13 +19,15 @@ if (isset($_POST['btn_login'])) {
         exit;
     }
 }
+
+
 ?>
 
 <div id="login_container">
     <div id="login_form">
         <h2 class="section-title">Iniciar Sesión</h2>
 
-        <?php echo $HTML->html_form_tag("frm_login", "login-form", "", "", "post"); ?>
+        <?php echo $HTML->html_form_tag("frm_login", "login-form", "", "post"); ?>
             <div class="form-group">
                 <label for="txt_username">Nombre de Usuario:</label>
                 <?php echo $HTML->html_input_text("text", "txt_username", "txt_username", "form-control", "", "Ingrese su nombre de usuario", "required"); ?>

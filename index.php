@@ -8,6 +8,8 @@ require_once(__CTR_PATH . "ctr_auth.php");
 
 $HTML = new cls_Html();
 $ctr_Auth = new ctr_Auth();
+
+
 ?>
 <!DOCTYPE html>
 <html lang="es">

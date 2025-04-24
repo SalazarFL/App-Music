@@ -1,6 +1,7 @@
 <?php
+
 // Variables que definen el nombre actual del hosting
-$myhost   = "https://musicapp-php.infinityfreeapp.com";
+$myhost   = "http://musicapp-php.infinityfreeapp.com";
 $myproject = "music-app";
 $mysite   = $myhost . "/" . $myproject;
 date_default_timezone_set('America/Tegucigalpa');

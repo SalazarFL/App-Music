@@ -8,7 +8,6 @@ class cls_Music {
         $this->data_provider = new cls_Mysql();
     }
 
-    // Obtener todas las canciones con detalles del usuario
     public function get_songs(): array {
         $result = $this->data_provider->sql_execute(
             "SELECT s.id, s.title, s.artist, s.genre, s.review, s.rating, s.created_at,
@@ -18,15 +17,17 @@ class cls_Music {
              ORDER BY s.id DESC"
         );
 
-        if ($result === false) return [];
+        if ($result === false) {
+            return [];
+        }
+
         return $this->data_provider->sql_get_rows_assoc($result);
     }
 
-    // Obtener canción por ID
     public function get_song_by_id(int $id): ?array {
         $result = $this->data_provider->sql_execute_prepared(
-            "SELECT s.id, s.title, s.artist, s.genre, s.review, s.rating, s.created_at,
-                    s.user_id, u.username, u.full_name, u.profile_image
+            "SELECT s.id, s.title, s.artist, s.genre, s.review, s.rating, s.created_at, s.user_id,
+                    u.username, u.full_name, u.profile_image
              FROM tbl_songs s
              JOIN tbl_users u ON s.user_id = u.id
              WHERE s.id = ?",
@@ -34,11 +35,13 @@ class cls_Music {
             [$id]
         );
 
-        if ($result === false) return null;
+        if ($result === false) {
+            return null;
+        }
+
         return $this->data_provider->sql_get_fetchassoc($result);
     }
 
-    // Insertar canción
     public function insert_song(array $songdata): bool {
         if (empty($songdata['title']) || empty($songdata['artist']) ||
             empty($songdata['genre']) || empty($songdata['review']) ||
@@ -62,11 +65,9 @@ class cls_Music {
         );
     }
 
-    // Actualizar canción (solo si el usuario es dueño)
     public function update_song(array $songdata): bool {
         if (empty($songdata['id']) || empty($songdata['title']) || empty($songdata['artist']) ||
-            empty($songdata['genre']) || empty($songdata['review']) ||
-            empty($songdata['rating']) || empty($songdata['user_id'])) {
+            empty($songdata['genre']) || empty($songdata['review']) || empty($songdata['rating'])) {
             return false;
         }
 
@@ -90,7 +91,21 @@ class cls_Music {
         );
     }
 
-    // Eliminar canción (solo si el usuario es dueño)
+    public function can_user_edit_song(int $song_id, int $user_id): bool {
+        $result = $this->data_provider->sql_execute_prepared(
+            "SELECT 1 FROM tbl_songs WHERE id = ? AND user_id = ?",
+            "ii",
+            [$song_id, $user_id]
+        );
+
+        if ($result === false) {
+            return false;
+        }
+
+        $row = $this->data_provider->sql_get_fetchassoc($result);
+        return $row !== null;
+    }
+
     public function delete_song(int $id, int $user_id): bool {
         if (!$this->can_user_edit_song($id, $user_id)) {
             return false;
@@ -103,21 +118,6 @@ class cls_Music {
         );
     }
 
-    // Verificar si el usuario puede editar la canción
-    public function can_user_edit_song(int $song_id, int $user_id): bool {
-        $result = $this->data_provider->sql_execute_prepared(
-            "SELECT 1 FROM tbl_songs WHERE id = ? AND user_id = ?",
-            "ii",
-            [$song_id, $user_id]
-        );
-
-        if ($result === false) return false;
-
-        $row = $this->data_provider->sql_get_fetchassoc($result);
-        return $row !== null;
-    }
-
-    // Buscar canciones
     public function search_songs(string $searchTerm): array {
         $searchTerm = "%{$searchTerm}%";
 
@@ -132,7 +132,10 @@ class cls_Music {
             [$searchTerm, $searchTerm, $searchTerm]
         );
 
-        if ($result === false) return [];
+        if ($result === false) {
+            return [];
+        }
+
         return $this->data_provider->sql_get_rows_assoc($result);
     }
 }
